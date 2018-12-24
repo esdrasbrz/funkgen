@@ -7,7 +7,6 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 from progress.bar import Bar
 import re
-import config
 
 BASE_URL = 'https://www.letras.mus.br/mais-acessadas/funk/'
 
@@ -24,7 +23,7 @@ def get_lyrics(html):
 
     return sentences
     
-def scrap(n_songs=1):
+def scrap(output_file, n_songs=1):
     # access base url with top 1000 funks
     html = requests.get(BASE_URL).text
     soup = BeautifulSoup(html, 'html.parser')
@@ -48,6 +47,9 @@ def scrap(n_songs=1):
     bar.finish()
 
     print("Saving dataset...")
-    with open(config.OUTPUT_DATASET_FILE, 'w') as fout:
-        fout.write('\n'.join(sentences))
+    text = '\n'.join(sentences).lower()
+    with open(output_file, 'w') as fout:
+        fout.write(text)
     print("Done!")
+
+    return text
