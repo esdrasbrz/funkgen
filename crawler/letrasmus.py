@@ -6,6 +6,7 @@ import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 from progress.bar import Bar
+import re
 import config
 
 BASE_URL = 'https://www.letras.mus.br/mais-acessadas/funk/'
@@ -14,10 +15,10 @@ def get_lyrics(html):
     s = BeautifulSoup(html, 'html.parser')
     article = s.find('article')
 
-    for elem in article.find_all("br"):
-        elem.replace_with("\n")
+    lyrics = re.sub(r'</?article>', '', str(article))
+    lyrics = re.sub(r'<.+?>', '\n', lyrics)
 
-    sentences = article.text.split('\n')
+    sentences = lyrics.split('\n')
     # filter sentences with less than 3 words
     sentences = [s for s in sentences if len(s.split()) >= 3]
 
