@@ -20,7 +20,7 @@ def generate_dict(text):
     ignored_words = set()
 
     for word, c in count:
-        if c < config.MIN_WORD_FRQUENCY:
+        if c < config.MIN_WORD_FREQUENCY:
             ignored_words.add(word)
         else:
             word_indices[word] = len(word_indices)
