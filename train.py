@@ -16,7 +16,7 @@ def main():
     print('done!')
 
     model = FunkgenModel(wi, iw, ign, config.SEQUENCE_LEN)
-    model.train(sequence, next_word, config.EPOCH_OUTPUT_FILEPATH, config.EPOCH_OUTPUT_FILEPATH)
+    model.train(sequence, next_word, config.EPOCH_CHECKPOINT_FILEPATH, config.EPOCH_OUTPUT_FILEPATH)
 
 if __name__ == '__main__':
     main()
