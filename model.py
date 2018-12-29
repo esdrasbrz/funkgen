@@ -67,6 +67,10 @@ class FunkgenModel:
 
         return model
 
+    def load_model_from_file(self, filepath):
+        self.model = self.get_model()
+        self.model.load_weights(filepath)
+        self.model.compile(loss='categorical_crossentropy', optimizer="adam", metrics=['accuracy'])
 
     def generate_lyrics(self, seed_sequence, temperature=.5, size=10):
         # Functions from keras-team/keras/blob/master/examples/lstm_text_generation.py
