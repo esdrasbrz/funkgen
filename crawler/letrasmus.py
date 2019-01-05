@@ -3,6 +3,7 @@ Crawler module to scrap funk lyrics from letras.mus.br
 """
 
 import requests
+import random
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 from progress.bar import Bar
@@ -23,7 +24,7 @@ def get_lyrics(html):
 
     return sentences
     
-def scrap(output_file, n_songs=1):
+def scrap(output_train_file, output_test_file, test_percentage=3, n_songs=1):
     # access base url with top 1000 funks
     html = requests.get(BASE_URL).text
     soup = BeautifulSoup(html, 'html.parser')
@@ -35,21 +36,40 @@ def scrap(output_file, n_songs=1):
         links = links[:n_songs]
 
     # iterate over all links and get the lyrics
-    sentences = []
+    songs = []
     bar = Bar('Scraping', max=len(links))
     for link in links:
         url = urljoin(BASE_URL, link)
         html_lyrics = requests.get(url).text
         lyrics = get_lyrics(html_lyrics)
-        sentences.extend(lyrics)
+        songs.append(lyrics)
 
         bar.next()
     bar.finish()
 
+    random.shuffle(songs) 
+
+    test_split_index = int(test_percentage * len(songs) / 100.)
+    test_songs = songs[:test_split_index]
+    train_songs = songs[test_split_index:]
+    
+    train_corpus = ""
+    test_corpus = ""
+    
     print("Saving dataset...")
-    text = '\n'.join(sentences).lower()
-    with open(output_file, 'w') as fout:
-        fout.write(text)
+    with open(output_train_file, 'w') as fout:
+        for s in train_songs:
+            seq = '\n'.join(s)
+            train_corpus += seq + '\n'
+
+            fout.write(seq + '\n')
+
+    with open(output_test_file, 'w') as fout:
+        for s in test_songs:
+            seq = '\n'.join(s)
+            test_corpus += seq + '\n'
+
+            fout.write(seq + '\n')
     print("Done!")
 
-    return text
+    return train_corpus, test_corpus

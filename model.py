@@ -25,23 +25,6 @@ class FunkgenModel:
         self.dropout = dropout
         self.cells = cells
 
-    def generator(self, sentence_list, next_word_list, batch_size, sequence_len, n_words):
-        """
-        Data generator for fit and evaluate
-        """
-
-        index = 0
-        while True:
-            x = np.zeros((batch_size, sequence_len, n_words), dtype=np.bool)
-            y = np.zeros((batch_size, n_words), dtype=np.bool)
-            for i in range(batch_size):
-                for t, w in enumerate(sentence_list[index % len(sentence_list)]):
-                    x[i, t, w] = 1
-                y[i, next_word_list[index % len(sentence_list)]] = 1
-                index = index + 1
-
-            yield x, y
-
     def shuffle_split_data(self, sentence, next_word):
         permutation = np.random.permutation(len(sentence))
         sentence = sentence[permutation]

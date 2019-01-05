@@ -21,20 +21,28 @@ def gen_sequences(corpus, tokenizer):
     return input_sequences
 
 def main():
-    corpus = letrasmus.scrap(config.OUTPUT_DATASET_FILE + '.txt', n_songs=config.NUM_SONGS).split('\n')
+    train_corpus, test_corpus = letrasmus.scrap(config.OUTPUT_DATASET_FILE + '.train.txt', \
+                                                config.OUTPUT_DATASET_FILE + '.test.txt', \
+                                                n_songs=config.NUM_SONGS)
+
+    train_corpus = train_corpus.split('\n')
+    test_corpus = test_corpus.split('\n')
 
     print('generating sequences...')
     tokenizer = Tokenizer()
-    tokenizer.fit_on_texts(corpus)
+    tokenizer.fit_on_texts(train_corpus + test_corpus)
     total_words = len(tokenizer.word_index) + 1
     print('total words: %d' % total_words)
 
     
-    sequences = gen_sequences(corpus, tokenizer)
-    print('number of sequences: %d' % len(sequences))
+    train_sequences = gen_sequences(train_corpus, tokenizer)
+    test_sequences = gen_sequences(test_corpus, tokenizer)
+    print('number of train sequences: %d' % len(train_sequences))
+    print('number of test sequences: %d' % len(test_sequences))
 
     pickle.dump(tokenizer, open(config.OUTPUT_DATASET_FILE + '.tokenizer.pkl', 'wb'))
-    pickle.dump(sequences, open(config.OUTPUT_DATASET_FILE + '.sequences.pkl', 'wb'))
+    pickle.dump(train_sequences, open(config.OUTPUT_DATASET_FILE + '.train.sequences.pkl', 'wb'))
+    pickle.dump(test_sequences, open(config.OUTPUT_DATASET_FILE + '.test.sequences.pkl', 'wb'))
     print('done!')
 
 
