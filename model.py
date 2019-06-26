@@ -5,7 +5,7 @@ https://github.com/enriqueav/lstm_lyrics
 
 from keras.callbacks import LambdaCallback, ModelCheckpoint, EarlyStopping
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation, LSTM, Bidirectional, Embedding
+from keras.layers import Dense, Dropout, Activation, LSTM, GRU, Bidirectional, Embedding
 import numpy as np
 
 class FunkgenModel:
@@ -49,11 +49,11 @@ class FunkgenModel:
 
         model = Sequential() 
         model.add(Embedding(self.n_words, self.embedding_dim, input_length=self.sequence_len-1))
-        model.add(Bidirectional(LSTM(self.cells)))
-        if self.dropout > 0:
-            model.add(Dropout(self.dropout))
-        model.add(Dense(self.n_words))
-        model.add(Activation('softmax'))
+        model.add(GRU(self.cells, return_sequences=True))
+        model.add(GRU(self.cells, dropout=self.dropout, recurrent_dropout=self.dropout))
+        model.add(Dense(self.cells, activation='relu'))
+        model.add(Dropout(0.3))
+        model.add(Dense(self.n_words, activation='softmax'))
 
         return model
 
