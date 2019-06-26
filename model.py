@@ -5,7 +5,7 @@ https://github.com/enriqueav/lstm_lyrics
 
 from keras.callbacks import LambdaCallback, ModelCheckpoint, EarlyStopping
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation, LSTM, Bidirectional
+from keras.layers import Dense, Dropout, Activation, LSTM, Bidirectional, Embedding
 import numpy as np
 
 class FunkgenModel:
@@ -14,7 +14,7 @@ class FunkgenModel:
         self.tokenizer = meta['tokenizer']
         self.n_words = meta['n_words']
         self.sequence_len = meta['sequence_len']
-        self.reverse_word_map = dict(map(reversed, tokenizer.word_index.items()))
+        self.reverse_word_map = dict(map(reversed, self.tokenizer.word_index.items()))
 
         self.batch_size = batch_size
         self.epochs = epochs
@@ -23,13 +23,31 @@ class FunkgenModel:
         self.dropout = dropout
         self.cells = cells
 
+    def generator(self, sentence_list, next_word_list, batch_size, sequence_len, n_words):
+        """
+        Data generator for fit and evaluate
+        """
+
+        index = 0
+        n_sentences = len(sentence_list)
+        while True:
+            x = np.zeros((batch_size, sequence_len-1), dtype=np.bool)
+            y = np.zeros((batch_size, n_words), dtype=np.bool)
+            for i in range(batch_size):
+                for t, tok in enumerate(sentence_list[index % n_sentences]):
+                    x[i, t] = tok
+                y[i, next_word_list[index % n_sentences].astype(np.bool)] = 1
+                index = index + 1
+
+            yield x, y
+
     def get_model(self):
         """
         Generates neural network model with Keras
         """
 
         model = Sequential() 
-        model.add(Embedding(self.n_words, 10, input_length=self.sequence_len))
+        model.add(Embedding(self.n_words, 10, input_length=self.sequence_len-1))
         model.add(Bidirectional(LSTM(self.cells)))
         if self.dropout > 0:
             model.add(Dropout(self.dropout))

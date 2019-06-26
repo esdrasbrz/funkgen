@@ -16,7 +16,9 @@ def main():
     print('done!')
 
     model = FunkgenModel(meta)
-    model.train(train_sequences, test_sequences, config.EPOCH_CHECKPOINT_FILEPATH, config.EPOCH_OUTPUT_FILEPATH)
+    model.train(x_train, y_train,
+                x_test, y_test,
+                config.EPOCH_CHECKPOINT_FILEPATH, config.EPOCH_OUTPUT_FILEPATH)
 
 if __name__ == '__main__':
     main()
