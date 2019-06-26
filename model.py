@@ -10,7 +10,7 @@ import numpy as np
 
 class FunkgenModel:
     def __init__(self, meta,\
-                 batch_size=256, epochs=50, patience=5, dropout=0.2, cells=128):
+                 batch_size=256, epochs=50, patience=5, embedding_dim=64, dropout=0.2, cells=128):
         self.tokenizer = meta['tokenizer']
         self.n_words = meta['n_words']
         self.sequence_len = meta['sequence_len']
@@ -20,6 +20,7 @@ class FunkgenModel:
         self.epochs = epochs
         self.patience = patience
 
+        self.embedding_dim = embedding_dim
         self.dropout = dropout
         self.cells = cells
 
@@ -47,7 +48,7 @@ class FunkgenModel:
         """
 
         model = Sequential() 
-        model.add(Embedding(self.n_words, 10, input_length=self.sequence_len-1))
+        model.add(Embedding(self.n_words, self.embedding_dim, input_length=self.sequence_len-1))
         model.add(Bidirectional(LSTM(self.cells)))
         if self.dropout > 0:
             model.add(Dropout(self.dropout))
