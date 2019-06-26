@@ -9,14 +9,12 @@ from keras.layers import Dense, Dropout, Activation, LSTM, Bidirectional
 import numpy as np
 
 class FunkgenModel:
-    def __init__(self, wi, iw, ign, sequence_len, percentage_test=5, \
+    def __init__(self, meta,\
                  batch_size=32, epochs=50, patience=5, dropout=0.2, cells=128):
-        self.wi = wi
-        self.iw = iw
-        self.ign = ign
-        self.sequence_len = sequence_len
-        self.n_words = len(wi)
-        self.percentage_test = percentage_test
+        self.tokenizer = meta['tokenizer']
+        self.n_words = meta['n_words']
+        self.sequence_len = meta['sequence_len']
+        self.reverse_word_map = dict(map(reversed, tokenizer.word_index.items()))
 
         self.batch_size = batch_size
         self.epochs = epochs
@@ -25,24 +23,14 @@ class FunkgenModel:
         self.dropout = dropout
         self.cells = cells
 
-    def shuffle_split_data(self, sentence, next_word):
-        permutation = np.random.permutation(len(sentence))
-        sentence = sentence[permutation]
-        next_word = next_word[permutation]
-
-        cut_index = int(len(sentence) * self.percentage_test / 100.)
-        x_test, x_train = sentence[:cut_index], sentence[cut_index:]
-        y_test, y_train = next_word[:cut_index], next_word[cut_index:]
-
-        return (x_train, y_train), (x_test, y_test)
-
     def get_model(self):
         """
         Generates neural network model with Keras
         """
 
         model = Sequential() 
-        model.add(Bidirectional(LSTM(self.cells), input_shape=(self.sequence_len, self.n_words)))
+        model.add(Embedding(self.n_words, 10, input_length=self.sequence_len))
+        model.add(Bidirectional(LSTM(self.cells)))
         if self.dropout > 0:
             model.add(Dropout(self.dropout))
         model.add(Dense(self.n_words))
@@ -88,9 +76,7 @@ class FunkgenModel:
 
         return output
 
-    def train(self, x, y, filepath, epoch_output_filepath):
-        (x_train, y_train), (x_test, y_test) = self.shuffle_split_data(x, y)
-
+    def train(self, x_train, y_train, x_test, y_test, filepath, epoch_output_filepath):
         self.model = self.get_model()
         self.model.compile(loss='categorical_crossentropy', optimizer="adam", metrics=['accuracy'])
 
