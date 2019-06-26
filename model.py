@@ -10,7 +10,7 @@ import numpy as np
 
 class FunkgenModel:
     def __init__(self, meta,\
-                 batch_size=32, epochs=50, patience=5, dropout=0.2, cells=128):
+                 batch_size=256, epochs=50, patience=5, dropout=0.2, cells=128):
         self.tokenizer = meta['tokenizer']
         self.n_words = meta['n_words']
         self.sequence_len = meta['sequence_len']
@@ -61,7 +61,7 @@ class FunkgenModel:
         self.model.load_weights(filepath)
         self.model.compile(loss='categorical_crossentropy', optimizer="adam", metrics=['accuracy'])
 
-    def generate_lyrics(self, seed_sequence, temperature=.5, size=10):
+    def generate_lyrics(self, seed_sequence, temperature=.5, size=40):
         # Functions from keras-team/keras/blob/master/examples/lstm_text_generation.py
         def sample(preds, temperature=1.0):
             # helper function to sample an index from a probability array
@@ -77,20 +77,20 @@ class FunkgenModel:
         # add to output the seed
         sequence = seed_sequence.tolist()
         for w in sequence:
-            output.append(self.iw[w])
+            if w != 0:
+                output.append(self.reverse_word_map[w])
 
-        for i in range(size-len(sequence)):
-            x_pred = np.zeros((1, self.sequence_len, self.n_words))
-            for t, w in enumerate(sequence):
-                x_pred[0, t, w] = 1.
+        initial_len = len(output)
+        for i in range(size-initial_len):
+            x_pred = np.zeros((1, self.sequence_len-1))
+            for i, w in enumerate(reversed(output[-(self.sequence_len-1):])):
+                x_pred[0, self.sequence_len-2-i] = self.tokenizer.word_index[w]
 
             preds = self.model.predict(x_pred, verbose=0)[0]
             next_index = sample(preds, temperature)
-            next_word = self.iw[next_index]
+            next_word = self.reverse_word_map[next_index]
 
             output.append(next_word)
-            sequence = sequence[1:]
-            sequence.append(next_index)
 
         return output
 
