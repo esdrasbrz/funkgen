@@ -8,8 +8,9 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation, LSTM, Bidirectional
 import numpy as np
 
+
 class FunkgenModel:
-    def __init__(self, wi, iw, ign, sequence_len, percentage_test=5, \
+    def __init__(self, wi, iw, ign, sequence_len, percentage_test=5,
                  batch_size=32, epochs=50, patience=5, dropout=0.2, cells=128):
         self.wi = wi
         self.iw = iw

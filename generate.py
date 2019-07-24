@@ -3,6 +3,7 @@ import config
 import pickle
 import numpy as np
 
+
 def main():
     # load dictionaries
     print('loading dicts...')
@@ -48,6 +49,7 @@ def main():
         op = input('Generate another funk? (y/N) ').lower()
         if op != 'y':
             break
+
 
 if __name__ == '__main__':
     main()
