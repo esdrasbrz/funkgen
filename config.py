@@ -2,7 +2,7 @@
 NUM_SONGS = 1000
 OUTPUT_DATASET_FILE = 'dataset/funk-top-1000'
 MIN_WORD_FREQUENCY = 5
-SEQUENCE_LEN = 4
+SEQUENCE_LEN = 6
 
 EPOCH_CHECKPOINT_FILEPATH = "./checkpoints/LSTM_LYRICS-epoch{epoch:03d}-songs%d-sequence%d-minfreq%d-loss{loss:.4f}-acc{acc:.4f}-val_loss{val_loss:.4f}-val_acc{val_acc:.4f}.hdf5" \
     % (NUM_SONGS, SEQUENCE_LEN, MIN_WORD_FREQUENCY)
