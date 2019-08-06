@@ -80,7 +80,7 @@ if __name__ == '__main__':
     ap.add_argument('-o', '--output', required=True, help='output file path')
     ap.add_argument('-s', '--seqlen', required=False, default=4, help='length of sequence')
     ap.add_argument('-w', '--minwordfreq', required=False, default=5, help='minimal word frequency')
-    ap.add_argument('-f', '--force', required=False, default=True, help='force download')
+    ap.add_argument('-f', '--force', required=False, default='true', help='force download')
     args = vars(ap.parse_args())
 
     def str2bool(s): return s.lower() in ['true', 't', '1']
