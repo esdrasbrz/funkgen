@@ -5,7 +5,7 @@ Crawler module to scrap funk lyrics from letras.mus.br
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
-from progress.bar import Bar
+from tqdm import tqdm
 import re
 
 BASE_URL = 'https://www.letras.mus.br/mais-acessadas/funk/'
@@ -36,15 +36,12 @@ def scrap(output_file, n_songs=1):
 
     # iterate over all links and get the lyrics
     sentences = []
-    bar = Bar('Scraping', max=len(links))
-    for link in links:
+    print('Scraping...')
+    for link in tqdm(links):
         url = urljoin(BASE_URL, link)
         html_lyrics = requests.get(url).text
         lyrics = get_lyrics(html_lyrics)
         sentences.extend(lyrics)
-
-        bar.next()
-    bar.finish()
 
     print("Saving dataset...")
     text = '\n'.join(sentences).lower()
