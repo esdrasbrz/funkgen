@@ -36,7 +36,6 @@ def scrap(output_file, n_songs=1):
 
     # iterate over all links and get the lyrics
     sentences = []
-    print('Scraping...')
     for link in tqdm(links):
         url = urljoin(BASE_URL, link)
         html_lyrics = requests.get(url).text
