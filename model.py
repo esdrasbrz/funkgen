@@ -44,10 +44,6 @@ class FunkgenModel:
             yield x, y
 
     def shuffle_split_data(self, sentence, next_word):
-        permutation = np.random.permutation(len(sentence))
-        sentence = sentence[permutation]
-        next_word = next_word[permutation]
-
         cut_index = int(len(sentence) * self.percentage_test / 100.)
         x_test, x_train = sentence[:cut_index], sentence[cut_index:]
         y_test, y_train = next_word[:cut_index], next_word[cut_index:]
